@@ -1,38 +1,25 @@
-import requests
-import json
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
-#from google.colab import userdata
+from fetchData import fetch_github_data
+from processData import process_github_data
+from visualization import visualize_top_repositories
+import logging
 
-# URL for GitHub API to fetch repositories
-url = 'https://api.github.com/search/repositories?q=stars:>1'
+logging.basicConfig(level=logging.INFO)  # Set logging level to INFO
 
-# Make a GET request to fetch data from the API
-response = requests.get(url)
+if __name__ == "__main__":
+    github_data = fetch_github_data()
 
-if response.status_code != 200:
-    print('Failed to fetch data from the API. Status code:', response.status_code)
+    if github_data:
+        repo_names, stars_count = process_github_data(github_data)
 
+        if repo_names is not None and stars_count is not None:
+            try:
+                visualize_top_repositories(repo_names, stars_count)
+                logging.info("Visualization created successfully.")
 
-# Convert the JSON response to a Python dictionary
-data = json.loads(response.text)
-
-# Extracting repository names and stars count
-repo_names = [repo['name'] for repo in data['items']]
-stars_count = [repo['stargazers_count'] for repo in data['items']]
-
-# Create a color scheme for bars
-num_repos = len(repo_names)
-colors = list(mcolors.TABLEAU_COLORS.keys())[:num_repos]
-
-# Create a horizontal bar chart for the top most starred repositories
-plt.figure(figsize=(10, 8))
-bars = plt.barh(repo_names[:10], stars_count[:10], color=colors)
-plt.xlabel('Number of Stars')
-plt.ylabel('Repository')
-plt.title('Top 10 Most Starred GitHub Repositories')
-
-plt.tight_layout()
-plt.show()
-
+            except Exception as e:
+                logging.error(f"Error creating visualization: {e}")
+        else:
+            logging.warning("Failed to process data. Visualization cannot be created.")
+    else:
+        logging.warning("Failed to fetch data. Visualization cannot be created.")
 
