@@ -1,4 +1,4 @@
-from fetchData import fetch_github_data
+from github_api.fetchData import fetch_github_data
 from processData import process_github_data
 from visualization import visualize_top_repositories
 import logging
@@ -6,7 +6,10 @@ import logging
 logging.basicConfig(level=logging.INFO)  # Set logging level to INFO
 
 if __name__ == "__main__":
-    github_data = fetch_github_data()
+
+    url = 'https://api.github.com/search/repositories?q=stars:>1'
+
+    github_data = fetch_github_data(url)
 
     if github_data:
         repo_names, stars_count = process_github_data(github_data)

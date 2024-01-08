@@ -4,7 +4,7 @@ import logging
 logging.basicConfig(level=logging.INFO)  # Set logging level to INFO
 
 
-def fetch_github_data():
+def fetch_github_data(url):
     """
     Fetches data from the GitHub API regarding top starred repositories.
 
@@ -12,7 +12,6 @@ def fetch_github_data():
     - Response JSON if successful.
     - None if there's an error.
     """
-    url = 'https://api.github.com/search/repositories?q=stars:>1'
 
     try:
         response = requests.get(url)
